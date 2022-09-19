@@ -18,7 +18,7 @@ encrypt        = true
 }
 */
 
-/*
+
 # #Call the seed_module to build our ADO seed info
 module "bootstrap" {
   source                      = "./modules/bootstrap"
@@ -29,15 +29,15 @@ module "bootstrap" {
   aws_iam_policy_permits_name = "GitHubActionsIamPolicyPermits"
   aws_iam_policy_assume_name  = "GitHubActionsIamPolicyAssume"
 }
-*/
 
 
-/*
+
+
 # Configure and downloading plugins for aws
 provider "aws" {
   region     = "${var.aws_region}"
 }
-*/
+
   
 /*
 # Creating VPC
@@ -191,7 +191,7 @@ resource "aws_instance" "bhsinstance" {
     type = "ssh"
   }
 
-  # Installing splunk on newly created instance
+  # Installing http://bhsworld.com/  on newly created instance 
   provisioner "remote-exec" {
     inline = [
     #  "A=`(sudo docker ps -a |awk '{print $1}'|grep -Ev CONTAINE)`",
