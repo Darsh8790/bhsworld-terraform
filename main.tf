@@ -3,6 +3,7 @@
 ####Step2:-  Only run 1st terraform state file block to create and store state file in S3 and comment out all other code.
 ####      Wait for State file to be pushed in S3.
 ####Step3:-  keep comment on seed_module and run the full code to create resource.
+
 /*
 # Require TF version to be same as or greater than 0.12.13
 terraform {
@@ -11,24 +12,24 @@ backend "s3" {
 bucket         = "bhsworld-terraform-s3-final"
 key            = "terraform.tfstate"
 region         = "ap-south-1"
-dynamodb_table = "aws-locks"
+dynamodb_table = "aws-locks-final"
 encrypt        = true
 }
 }
 */
 
-
+/*
 # #Call the seed_module to build our ADO seed info
-#module "bootstrap" {
-  #source                      = "./modules/bootstrap"
-  #name_of_s3_bucket           = "bhsworld-terraform-s3"
-  #dynamo_db_table_name        = "aws-locks"
-  #iam_user_name               = "GitHubActionsIamUser"
-  #ado_iam_role_name           = "GitHubActionsIamRole"
-  #aws_iam_policy_permits_name = "GitHubActionsIamPolicyPermits"
-  #aws_iam_policy_assume_name  = "GitHubActionsIamPolicyAssume"
-#}
-
+module "bootstrap" {
+  source                      = "./modules/bootstrap"
+  name_of_s3_bucket           = "bhsworld-terraform-s3-final"
+  dynamo_db_table_name        = "aws-locks-final"
+  iam_user_name               = "GitHubActionsIamUser"
+  ado_iam_role_name           = "GitHubActionsIamRole"
+  aws_iam_policy_permits_name = "GitHubActionsIamPolicyPermits"
+  aws_iam_policy_assume_name  = "GitHubActionsIamPolicyAssume"
+}
+*/
 
 
 /*
@@ -40,56 +41,60 @@ provider "aws" {
   
 /*
 # Creating VPC
-resource "aws_vpc" "demovpc" {
+resource "aws_vpc" "bhsvpc" {
   cidr_block       = "${var.vpc_cidr}"
   instance_tenancy = "default"
 
   tags = {
-    Name = "Demo VPC"
+    Name = "BHS-WORLD-VPC"
   }
 }
 
 # Creating Internet Gateway
-resource "aws_internet_gateway" "demogateway" {
-  vpc_id = "${aws_vpc.demovpc.id}"
+resource "aws_internet_gateway" "bhsgateway" {
+  vpc_id = "${aws_vpc.bhsvpc.id}"
+  ags = {
+    Name = "BHS-WORLD-IGW"
+  }
+}
 }
 
 # Grant the internet access to VPC by updating its main route table
 resource "aws_route" "internet_access" {
-  route_table_id         = "${aws_vpc.demovpc.main_route_table_id}"
+  route_table_id         = "${aws_vpc.bhsvpc.main_route_table_id}"
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = "${aws_internet_gateway.demogateway.id}"
+  gateway_id             = "${aws_internet_gateway.bhsgateway.id}"
 }
 
 # Creating 1st subnet
-resource "aws_subnet" "demosubnet" {
-  vpc_id                  = "${aws_vpc.demovpc.id}"
-  cidr_block             = "${var.subnet_cidr}"
+resource "aws_subnet" "bhssubnetpub1" {
+  vpc_id                  = "${aws_vpc.bhsvpc.id}"
+  cidr_block             = "${var.subnetpub1_cidr}"
   map_public_ip_on_launch = true
   availability_zone = "ap-south-1a"
 
   tags = {
-    Name = "Demo subnet"
+    Name = "BHS-WORLD-Subnet-Pub-1"
   }
 }
 
 # Creating 2nd subnet
-resource "aws_subnet" "demosubnet1" {
-  vpc_id                  = "${aws_vpc.demovpc.id}"
-  cidr_block             = "${var.subnet1_cidr}"
+resource "aws_subnet" "bhssubnetpub2" {
+  vpc_id                  = "${aws_vpc.bhsvpc.id}"
+  cidr_block             = "${var.subnetpub2_cidr}"
   map_public_ip_on_launch = true
   availability_zone = "ap-south-1b"
 
   tags = {
-    Name = "Demo subnet 1"
+    Name = "BHS-WORLD-Subnet-Pub-2"
   }
 }
 
 # Creating Security Group
-resource "aws_security_group" "demosg" {
-  name        = "Demo Security Group"
-  description = "Demo Module"
-  vpc_id      = "${aws_vpc.demovpc.id}"
+resource "aws_security_group" "bhssg" {
+  name        = "BHS-WORLD-Security-Group"
+  description = "SG with exposing 80,443,22"
+  vpc_id      = "${aws_vpc.bhsvpc.id}"
 
   # Inbound Rules
   # HTTP access from anywhere
@@ -127,30 +132,31 @@ resource "aws_security_group" "demosg" {
   }
 }
 
-# Creating key pair
+# Using existing key pair
 data "aws_key_pair" "bhs-nginx-key" {
   key_name   = "bhs-nginx-key"
   include_public_key = true
 }
 
-#Search EIp by allocation ID
+#Search EIP by allocation ID
 data "aws_eip" "by_allocation_id" {
   id = "eipalloc-0e9613c45ac39a50a"
 }
 
+#Attach EIP to instance
 resource "aws_eip_association" "eip_assoc" {
-  instance_id   = "${aws_instance.demoinstance.id}"
+  instance_id   = "${aws_instance.bhsinstance.id}"
   allocation_id = "${data.aws_eip.by_allocation_id.id}"
 }
 
 # Creating EC2 Instance
-resource "aws_instance" "demoinstance" {
+resource "aws_instance" "bhsinstance" {
 
   # AMI based on region
   ami = "${var.ami}"
 
   # Launching instance into subnet
-  subnet_id = "${aws_subnet.demosubnet.id}"
+  subnet_id = "${aws_subnet.bhssubnetpub1.id}"
 
   # Instance type
   instance_type = "${var.instancetype}"
@@ -162,12 +168,12 @@ resource "aws_instance" "demoinstance" {
   key_name = "${data.aws_key_pair.bhs-nginx-key.key_name}"
 
   # Attaching security group to our instance
-  vpc_security_group_ids = ["${aws_security_group.demosg.id}"]
+  vpc_security_group_ids = ["${aws_security_group.bhssg.id}"]
 
   # Attaching Tag to Instance
   tags = {
-  #  Name = "Search-Head-${count.index + 1}"
-    Name = "Search-Head-01"
+  #  Name = "BHS-WORLD-${count.index + 1}"
+    Name = "BHS-Nginx-terraform-githubaction-Demo"
   }
 
 
