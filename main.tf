@@ -39,7 +39,7 @@ provider "aws" {
 }
 
   
-/*
+
 # Creating VPC
 resource "aws_vpc" "bhsvpc" {
   cidr_block       = "${var.vpc_cidr}"
@@ -208,4 +208,4 @@ resource "aws_instance" "bhsinstance" {
  }
 }
 
-*/
+
