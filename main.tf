@@ -57,7 +57,7 @@ resource "aws_internet_gateway" "bhsgateway" {
     Name = "BHS-WORLD-IGW"
   }
 }
-}
+
 
 # Grant the internet access to VPC by updating its main route table
 resource "aws_route" "internet_access" {
