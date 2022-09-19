@@ -4,7 +4,7 @@
 ####      Wait for State file to be pushed in S3.
 ####Step3:-  keep comment on seed_module and run the full code to create resource.
 
-/*
+
 # Require TF version to be same as or greater than 0.12.13
 terraform {
 required_version = ">=0.12"
@@ -16,9 +16,9 @@ dynamodb_table = "aws-locks-final"
 encrypt        = true
 }
 }
-*/
 
 
+/*
 # #Call the seed_module to build our ADO seed info
 module "bootstrap" {
   source                      = "./modules/bootstrap"
@@ -30,7 +30,7 @@ module "bootstrap" {
   aws_iam_policy_assume_name  = "GitHubActionsIamPolicyAssume"
 }
 
-
+*/
 
 
 # Configure and downloading plugins for aws
@@ -191,7 +191,7 @@ resource "aws_instance" "bhsinstance" {
     type = "ssh"
   }
 
-  # Installing http://bhsworld.com/  on newly created instance 
+  # Installing nginx-docker for  http://bhsworld.com/  on newly created instance 
   provisioner "remote-exec" {
     inline = [
     #  "A=`(sudo docker ps -a |awk '{print $1}'|grep -Ev CONTAINE)`",
