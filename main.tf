@@ -18,7 +18,7 @@ encrypt        = true
 }
 */
 
-/*
+
 # #Call the seed_module to build our ADO seed info
 module "bootstrap" {
   source                      = "./modules/bootstrap"
@@ -29,15 +29,15 @@ module "bootstrap" {
   aws_iam_policy_permits_name = "GitHubActionsIamPolicyPermits"
   aws_iam_policy_assume_name  = "GitHubActionsIamPolicyAssume"
 }
-*/
 
 
-/*
+
+
 # Configure and downloading plugins for aws
 provider "aws" {
   region     = "${var.aws_region}"
 }
-*/
+
   
 /*
 # Creating VPC
