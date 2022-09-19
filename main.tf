@@ -4,7 +4,7 @@
 ####      Wait for State file to be pushed in S3.
 ####Step3:-  keep comment on seed_module and run the full code to create resource.
 
-
+/*
 # Require TF version to be same as or greater than 0.12.13
 terraform {
 required_version = ">=0.12"
@@ -16,7 +16,7 @@ dynamodb_table = "aws-locks-final"
 encrypt        = true
 }
 }
-
+*/
 
 /*
 # #Call the seed_module to build our ADO seed info
@@ -32,14 +32,14 @@ module "bootstrap" {
 */
 
 
-
+/*
 # Configure and downloading plugins for aws
 provider "aws" {
   region     = "${var.aws_region}"
 }
-
+*/
   
-
+/*
 # Creating VPC
 resource "aws_vpc" "bhsvpc" {
   cidr_block       = "${var.vpc_cidr}"
@@ -207,3 +207,4 @@ resource "aws_instance" "bhsinstance" {
   ]
  }
 }
+*/
