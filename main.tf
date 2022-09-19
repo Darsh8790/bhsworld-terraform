@@ -53,7 +53,7 @@ resource "aws_vpc" "bhsvpc" {
 # Creating Internet Gateway
 resource "aws_internet_gateway" "bhsgateway" {
   vpc_id = "${aws_vpc.bhsvpc.id}"
-  ags = {
+  tags = {
     Name = "BHS-WORLD-IGW"
   }
 }
