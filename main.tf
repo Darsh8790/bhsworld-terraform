@@ -32,7 +32,7 @@ module "bootstrap" {
 
 */
 
-
+/*
 # Configure and downloading plugins for aws
 provider "aws" {
   region     = "${var.aws_region}"
@@ -208,4 +208,4 @@ resource "aws_instance" "bhsinstance" {
  }
 }
 
-
+*/
