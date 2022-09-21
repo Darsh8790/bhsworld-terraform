@@ -32,13 +32,13 @@ module "bootstrap" {
 
 */
 
-/*
+
 # Configure and downloading plugins for aws
 provider "aws" {
   region     = "${var.aws_region}"
 }
 
-  
+  /*
 
 # Creating VPC
 resource "aws_vpc" "bhsvpc" {
